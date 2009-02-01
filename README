@@ -1,0 +1,17 @@
+This is a repository for useful small snippets that really belong in version
+control in a central spot, instead of someone's Public. Please add stuff
+here via git:
+
+add git
+git clone /afs/sipb/project/snippets
+cd snippets
+[create or copy a file, let's call it "item"]
+git commit item
+git push
+
+If you're not on gsipb and want to commit, ask e.g. geofft for access. You
+can't write to the top level checkout here, but if you push (to the master
+branch) from your own checkout, it will automatically update this checkout.
+
+There's a (currently very simple) web interface at
+http://snippets.scripts.mit.edu/gitweb.pl?p=.git;a=tree
