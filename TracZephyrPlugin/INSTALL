@@ -1,0 +1,14 @@
+To install the TracZephyrPlugin, first run
+
+  $ python setup.py bdist_egg
+
+then copy the .egg file in the dist/ directory into the plugins/ directory of
+your trac install.
+
+To enable the plugin, you must configure the class that zephyr updates should
+go to. To do this, add a section like the following to your trac.ini:
+
+  [ZephyrPlugin]
+  class = debathena
+
+Then be sure to restart the FastCGI processes if there are any.
