@@ -1,0 +1,20 @@
+kdo is a series of shell functions for dealing with multiple Kerberos
+on Mac OS X.
+
+Add the contents of bashrc to your .bashrc file. To run a command with
+a different set of credentials from your default, run (e.g.)
+
+  kdo broder/root aklog
+
+If you don't currently have credentials for the principal you specify,
+you'll be prompted for the password.
+
+kdo by default gets nonforwardable tickets with a 15 minute lifetime,
+renewable for 60 minutes; you can change the kinit_args variable in
+kdo if you want to change these defaults.
+
+kdo doesn't behave well if you don't already have tickets of some
+form.
+
+This snippet also provides krootssh, which is a convenience function
+for using your root instance tickets to ssh into another machine.
