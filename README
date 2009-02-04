@@ -14,4 +14,4 @@ can't write to the top level checkout here, but if you push (to the master
 branch) from your own checkout, it will automatically update this checkout.
 
 There's a (currently very simple) web interface at
-http://snippets.scripts.mit.edu/gitweb.pl?p=.git;a=tree
+http://snippets.scripts.mit.edu/
