@@ -3,7 +3,7 @@ control in a central spot, instead of someone's Public. Please add stuff
 here via git:
 
 add git
-git clone /afs/sipb/project/snippets
+git clone /mit/snippets
 cd snippets
 [create or copy a file, let's call it "item"]
 git commit item
