@@ -8,6 +8,7 @@
 #  aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b79f814 refs/heads/master
 
 class=`git config zephyr.class`
+instance=`git config zephyr.instance`
 zsig=`git config zephyr.zsig`
 if [ -z "$class" ]; then
   echo "I don't know where to send a commit zephyr!" >&2
@@ -24,6 +25,6 @@ while read oldrev newrev refname; do
      sed "s/\[33m/@color(yellow)/g" |
      sed "s/\[31m/@color(red)/g" |
      sed "s/\[32m/@color(green)/g") |
-    zwrite -c "$class" -i "$shortrev" -s "$zsig: $refname" -d
+    zwrite -c "$class" -i "${instance:-$shortrev}" -s "${zsig:-Git}: $refname" -d
   done
 done
