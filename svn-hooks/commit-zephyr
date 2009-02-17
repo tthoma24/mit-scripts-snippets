@@ -38,4 +38,4 @@ svnlook info "$REPOS" -r "$REV" | (
     else
 	echo svnlook diff "$REPOS" -r "$REV"
     fi
-) | zwrite -d -c "$CLASS" -i "$INSTANCE" -O "auto" -s "r$REV - $dirs"
+) | zwrite -d -c "$CLASS" -i "$INSTANCE" -O "auto" -s "SVN: r$REV"
