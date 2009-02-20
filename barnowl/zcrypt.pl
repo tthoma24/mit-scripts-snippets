@@ -5,7 +5,7 @@
 # command replaces the built-in one.
 #
 # To use this code, type
-#   :perl do '/mit/snippets/barnowl/barnowl-zcrypt.pl'
+#   :perl do '/mit/snippets/barnowl/zcrypt.pl'
 #
 # This first line will disable BarnOwl's own zcrypt code, so messages are
 # encrypted onscreen. Use :decrypt to display them. (Security bugs were later
