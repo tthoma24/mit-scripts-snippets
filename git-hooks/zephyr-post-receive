@@ -28,11 +28,14 @@ while read oldrev newrev refname; do
   git-rev-list --reverse "$oldrev..$newrev" | while read rev; do
     shortrev=`git log -1 --pretty=format:%h "$rev"`
     (git show --stat $usecolor "$rev" |
-     sed "s/@/@@/g" |
-     sed "s/\[m/@color(default)/g" |
-     sed "s/\[33m/@color(yellow)/g" |
-     sed "s/\[31m/@color(red)/g" |
-     sed "s/\[32m/@color(green)/g") |
+     sed -e 's/@/@@/g' \
+         -e 's/}/@(})/g' \
+         -e 's/\[m/}@{/g' \
+         -e 's/\[33m/@color(yellow)/g' \
+         -e 's/\[31m/@color(red)/g' \
+         -e 's/\[32m/@color(green)/g' \
+         -e '1s/^/@{/' \
+         -e '$s/$/}/') |
     zwrite -c "$class" -i "${instance:-$shortrev}" -s "${zsig:-Git}: $refname" -d
   done
 done
