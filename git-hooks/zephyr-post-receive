@@ -10,6 +10,14 @@
 class=`git config zephyr.class`
 instance=`git config zephyr.instance`
 zsig=`git config zephyr.zsig`
+color=`git config --bool zephyr.color`
+
+if [ "${color:-true}" = "true" ]; then
+    usecolor="--color"
+else
+    usecolor=""
+fi
+
 if [ -z "$class" ]; then
   echo "I don't know where to send a commit zephyr!" >&2
   echo "Please set the zephyr.class config variable in" >&2
@@ -19,7 +27,7 @@ fi
 while read oldrev newrev refname; do
   git-rev-list --reverse "$oldrev..$newrev" | while read rev; do
     shortrev=`git log -1 --pretty=format:%h "$rev"`
-    (git show --stat --color "$rev" |
+    (git show --stat $usecolor "$rev" |
      sed "s/@/@@/g" |
      sed "s/\[m/@color(default)/g" |
      sed "s/\[33m/@color(yellow)/g" |
