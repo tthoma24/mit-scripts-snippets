@@ -35,7 +35,8 @@ class Notifier(AbstractConsumer):
             zauth = d['auth'].lower() == 'yes'
             ztime = ':'.join(d['time'].split(' ')[3].split(':')[0:2])
             zmessage = d['message']
-            id = '%s/\n%s/\n%s\n %s' % (zclass, zinstance, zsender, ztime)
+            idtuple = (zclass, zinstance, zsender, ztime)
+            id = '%s/\n%s/\n%s\n %s' % idtuple
             if zop == 'ping':
                 header = '%s (%s)' % (id, zsender)
                 message = '...'
@@ -53,10 +54,15 @@ class Notifier(AbstractConsumer):
                 g.stdin.write(message)
                 g.stdin.close()
             if self.usenotify:
-                if id in self.pings:
-                    self.pings[id].close()
-                self.pings[id] = self.pynotify.Notification(header, message)
-                self.pings[id].show()
+                if idtuple in self.pings:
+                    self.pings[idtuple].update(header, message)
+                    self.pings[idtuple].show()
+                else:
+                    n = self.pynotify.Notification(header, message)
+                    n.show()
+                    if zop == 'ping':
+                        self.pings[idtuple] = n
+                self.pings = dict(filter(lambda ((c, i, s, time), v): time == idtuple[3], self.pings.items()))
     def close(self):
         return
 
