@@ -17,6 +17,10 @@ class Notifier(AbstractConsumer):
     def __init__(self, usegrowl, usenotify, useprint):
         self.usegrowl = usegrowl
         self.usenotify = usenotify
+        if usenotify:
+            import pynotify
+            pynotify.init("Zephyr")
+            self.pings = {}
         self.useprint = useprint
         return
     def feed(self, s):
@@ -48,8 +52,11 @@ class Notifier(AbstractConsumer):
                 g.stdin.write(message)
                 g.stdin.close()
             if self.usenotify:
-                notifysend = ['notify-send', header, message]
-                subprocess.call(notifysend)
+                import pynotify
+                if id in self.pings:
+                    self.pings[id].close()
+                self.pings[id] = pynotify.Notification(header, message)
+                self.pings[id].show()
     def close(self):
         return
 
