@@ -21,6 +21,7 @@ class Notifier(AbstractConsumer):
             import pynotify
             pynotify.init("Zephyr")
             self.pings = {}
+            self.pynotify = pynotify
         self.useprint = useprint
         return
     def feed(self, s):
@@ -52,10 +53,9 @@ class Notifier(AbstractConsumer):
                 g.stdin.write(message)
                 g.stdin.close()
             if self.usenotify:
-                import pynotify
                 if id in self.pings:
                     self.pings[id].close()
-                self.pings[id] = pynotify.Notification(header, message)
+                self.pings[id] = self.pynotify.Notification(header, message)
                 self.pings[id].show()
     def close(self):
         return
