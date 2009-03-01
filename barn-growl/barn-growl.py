@@ -12,6 +12,7 @@ import select
 import sys
 from abstfilter import AbstractConsumer
 import optparse
+import time
 
 class Notifier(AbstractConsumer):
     def __init__(self, usegrowl, usenotify, useprint):
@@ -33,7 +34,7 @@ class Notifier(AbstractConsumer):
             zop = d['opcode'].lower()
             zsender = d['sender'].lower()
             zauth = d['auth'].lower() == 'yes'
-            ztime = ':'.join(d['time'].split(' ')[3].split(':')[0:2])
+            ztime = "%02d:%02d" % time.strptime(d['time'])[3:5]
             zmessage = d['message']
             idtuple = (zclass, zinstance, zsender, ztime)
             id = '%s/\n%s/\n%s\n %s' % idtuple
