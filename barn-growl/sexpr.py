@@ -4,6 +4,8 @@
 ##
 ##  * public domain *
 ##
+##  from http://www.unixuser.org/~euske/python/index.html:
+##  The following files are in public domain except where otherwise noted. THESE FILES COME WITH ABSOLUTELY NO WARRANTY.
 
 from abstfilter import AbstractFeeder, AbstractFilter, AbstractConsumer
 

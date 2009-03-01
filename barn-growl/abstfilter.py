@@ -3,6 +3,8 @@
 ##
 ##  abstfilter.py - A framework for cascade filters.
 ##
+##  from http://www.unixuser.org/~euske/python/index.html:
+##  The following files are in public domain except where otherwise noted. THESE FILES COME WITH ABSOLUTELY NO WARRANTY.
 
 
 ##  AbstractFeeder
