@@ -86,6 +86,12 @@ def main(argv):
         return 1
     ssh = opts.ssh
 
+    if ssh is None:
+        retval = subprocess.call(['which', 'tzc'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if retval:
+            print 'tzc not in path.  Please add -s username@machine to specify remote host.'
+            return 1
+
     if ssh is not None:
         command = "ssh -K %s 'tzc -si'" % ssh
     else:
@@ -96,13 +102,16 @@ def main(argv):
     flags = fcntl.fcntl(p, fcntl.F_GETFL)
     fcntl.fcntl(p, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
-    while 1:
-        [i,o,e] = select.select([p], [], [], 5)
-        if i: s = p.read(1024)
-        else: s = ''
+    try:
+        while 1:
+            [i,o,e] = select.select([p], [], [], 5)
+            if i: s = p.read(1024)
+            else: s = ''
 
-        if s != '':
-            r.feed(s)
+            if s != '':
+                r.feed(s)
+    except KeyboardInterrupt:
+        pass
     return 0
 
 if __name__ == "__main__":
