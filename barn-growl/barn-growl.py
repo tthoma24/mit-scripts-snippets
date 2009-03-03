@@ -107,7 +107,7 @@ def main(argv):
             return 1
 
     if ssh is not None:
-        command = "ssh -K %s 'tzc -si'" % ssh
+        command = "ssh -o GSSAPIAuthentication=yes -o GSSAPIDelegateCredentials=yes -o GSSAPIKeyExchange=yes %s 'tzc -si'" % ssh
     else:
         command = "tzc -si"
     p = os.popen(command)
