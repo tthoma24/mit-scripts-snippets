@@ -50,7 +50,7 @@ class Notifier(AbstractConsumer):
                 print (id, header)
                 print message
             if self.usegrowl:
-                growlnotify = ['growlnotify', '-a', 'MacZephyr', '-n', 'zephyr', '-d', id, '-t', header]
+                growlnotify = ['growlnotify', '-H', 'localhost', '-a', 'MacZephyr', '-n', 'zephyr', '-d', id, '-t', header]
                 g = subprocess.Popen(growlnotify, stdin=subprocess.PIPE)
                 g.stdin.write(message)
                 g.stdin.close()
