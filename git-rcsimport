@@ -1,0 +1,22 @@
+#!/bin/sh
+# This is a trivial wrapper around git-cvsimport.
+
+dir="$1"
+shift
+if [ -z "$dir" ]; then
+  echo "Usage: git-rcsimport path/to/dir"
+  exit 1
+fi
+if [ ! -d "$dir/RCS" ]; then
+  echo "$dir/RCS does not exist."
+  exit 1
+fi
+
+tmpdir=`mktemp -d`
+mkdir "$tmpdir/CVSROOT"
+mkdir "$tmpdir/locks"
+echo "LockDir=$tmpdir/locks" > "$tmpdir/CVSROOT/config"
+ln -s "`readlink -f "$dir"`/RCS" "$tmpdir/RCS"
+CVSROOT="$tmpdir" git cvsimport RCS "$@"
+rm "$tmpdir/RCS" # a bit paranoid about rm -r's competence
+rm -r "$tmpdir"
