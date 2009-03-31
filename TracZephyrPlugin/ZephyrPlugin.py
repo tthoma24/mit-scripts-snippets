@@ -1,6 +1,6 @@
 from trac.core import *
 from trac.ticket import ITicketChangeListener
-import os
+import subprocess
 import textwrap
 
 class ZephyrPlugin(Component):
@@ -10,9 +10,13 @@ class ZephyrPlugin(Component):
 		zclass = self.config.get('ZephyrPlugin', 'class')
 		if zclass == '':
 			return
-		pipe = os.popen('zwrite -q -l -d -c %s -i trac-#%s' % (zclass, id), 'w')
-		pipe.write("\n".join(textwrap.wrap(message)).encode('utf-8', 'replace'))
-		pipe.close()
+                p = subprocess.Popen(['zwrite', '-q', '-l', '-d',
+                                      '-c', zclass,
+                                      '-i', 'trac-#%s' % id],
+                                     stdin=subprocess.PIPE)
+                p.stdin.write("\n".join(textwrap.wrap(message)).encode('utf-8', 'replace'))
+		p.stdin.close()
+                p.wait()
 	
 	def ticket_created(self, ticket):
 		message = "%s filed a new ticket:\n%s\n\n%s" % (ticket['reporter'], ticket['summary'], ticket['description'][:255])
