@@ -1,6 +1,8 @@
 # kdo is a shell function for interacting with multiple Kerberos
 # credential caches.
 #
+# To use kdo, add this snippet to your .bashrc or .bashrc.mine file.
+#
 # To run a command with a different set of credentials from your
 # default, run
 #
