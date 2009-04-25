@@ -1,0 +1,114 @@
+# kdo is a shell function for interacting with multiple Kerberos
+# credential caches.
+#
+# To run a command with a different set of credentials from your
+# default, run
+#
+#     kdo <principal> <command>
+#
+# e.g.,
+#
+#     kdo broder/root aklog
+#
+# If you lack credentials for the specified principal, you'll be
+# prompted for the password.
+#
+# If kdo needs to acquire tickets, it will pass the value of
+# ${kdo_args[@]} to kinit. I use this to get tickets that last for 15
+# minutes, that are renewable for 60 minutes, and aren't forwardable.
+#
+# To add kdo support for a new platform, you need to provide an
+# interface to multiple credential caches by defining two functions:
+#
+#  - kcaches::
+#      Print one line per current credential cache of the form "<KRB5CCNAME> <PRINCIPAL>" 
+#  - knewcache::
+#      Without changing the current credentials cache, get credentials
+#      for the principal in $1, passing the remaining arguments to
+#      kinit.
+#      knewcache should set the variable cache with the KRB5CCNAME
+#      value for the newly created credential cache
+#
+# Also included is krootssh, a wrapper around ssh for using your
+# root-instance tickets with ssh. It ensures that your tickets don't
+# get accidentally forwarded, on the off chance that you have
+# forwardable tickets.
+
+# CONFIGURATION
+kdo_args=(-l15m -r60m -F)
+
+# CC interface for OS X
+if [ "Darwin" = "$(uname)" ]; then
+    kcaches () {
+        klist -A | awk '/^Kerberos 5 ticket cache:/ {cache = $5; princline=NR+1} NR==princline {print substr(cache, 2, length(cache)-2), $3}'
+    }
+
+    knewcache () {
+        princ="$1"; shift
+        local oldcache="$(klist | grep 'Kerberos 5 ticket cache' | cut -f 2 -d "'")"
+        kinit "$@" "$princ" || return 1
+        cache="$(kfindcache "$princ")"
+        # On OS X, kinit will switch your default credential cache to
+        # that of the newly acquired tickets, so switch back if we can
+        if [ -z "$oldcache" ]; then
+            echo "W: Tickets for $princ are now in your default credential cache" >&2
+        else
+            kswitch -c "$oldcache"
+        fi
+    }
+fi
+
+# If kcaches and knewcache have been defined for this platform, then
+# setup kdo. Otherwise, add a helpful error.
+if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
+    kfindcache () {
+        kcaches | fgrep "$1" | awk '{print $1}'
+    }
+
+    kdo () {
+        local princ="$1"; shift
+        local cache="$(kfindcache "$princ")"
+        # If the cache that we want to use has expired tickets, then
+        # destroy that cache so we don't try to use it again and clear
+        # $cache so that we'll revert to acquiring a new set of
+        # tickets
+        if [ -n "$cache" ] && ! klist -s "$cache"; then
+            KRB5CCNAME="$cache" kdestroy
+            cache=""
+        fi
+        if [ -z "$cache" ]; then
+            knewcache "$princ" "${kdo_args[@]}" || return 1
+        fi
+        echo "I: Running $1 with cache $cache (for principal $princ)" >&2
+        KRB5CCNAME="$cache" "$@"
+    }
+    _kdo () {
+        local cur
+        COMPREPLY=()
+        cur="${COMP_WORDS[COMP_CWORD]}"
+        opts="$(kcaches | awk '{ print $2 }')"
+        case $COMP_CWORD in
+            1)
+                COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+                ;;
+            2)
+                COMPREPLY=($(compgen -c -- "${cur}"))
+        esac
+    }
+    complete -o bashdefault -F _kdo kdo
+
+    krootssh () {
+        kdo ${ATHENA_USER:-$USER}/root@ATHENA.MIT.EDU ssh -o GSSAPIDelegateCredentials=no "$@"
+    }
+else
+    kdo () {
+        echo "kdo has not been ported to this platform yet." >&2
+        return 1
+    }
+
+    krootssh () {
+        echo "kdo has not been ported to this plastform yet." >&2
+        return 1
+    }
+fi
+
