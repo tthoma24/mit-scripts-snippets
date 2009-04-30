@@ -1,3 +1,4 @@
+# -*- mode: sh -*-
 # kdo is a shell function for interacting with multiple Kerberos
 # credential caches.
 #
@@ -48,6 +49,7 @@ if [ "Darwin" = "$(uname)" ]; then
     knewcache () {
         princ="$1"; shift
         local oldcache="$(klist | grep 'Kerberos 5 ticket cache' | cut -f 2 -d "'")"
+        # " # <-- emacs thinks there's an unbalanced " on the previous line.
         kinit "$@" "$princ" || return 1
         cache="$(kfindcache "$princ")"
         # On OS X, kinit will switch your default credential cache to
