@@ -25,6 +25,12 @@ if [ -z "$class" ]; then
   exit 1
 fi
 while read oldrev newrev refname; do
+  if [ "$oldrev" = "0000000000000000000000000000000000000000" ]; then
+    # dammit git
+    zwrite -c "$class" -i "$(basename "$refname")" -s "${zsig:-Git}: $refname" -d \
+      -m "New branch created."
+    continue
+  fi
   git-rev-list --reverse "$oldrev..$newrev" | while read rev; do
     shortrev=`git log -1 --pretty=format:%h "$rev"`
     (git show --stat $usecolor "$rev" |
