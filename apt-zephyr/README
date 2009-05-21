@@ -1,0 +1,17 @@
+apt-zephyr hook
+
+Author: Anders Kaseorg <andersk@mit.edu>
+
+Usage: install these files to
+
+/etc/apt/apt.conf.d/90zephyr
+/usr/local/sbin/apt-zephyr
+
+and configure /etc/apt-zephyr.conf, e.g.
+
+CLASS="linerva"
+INSTANCE="apt.$(hostname)"
+
+Valid options include CLASS, INSTANCE, REALM, RECIPIENTS, SIG (default 
+"$(hostname -f)"), OPCODE (default "auto"), ZAUTH (default "", set 
+nonempty to enable).
