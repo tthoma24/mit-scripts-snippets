@@ -10,7 +10,10 @@ class ZephyrPlugin(Component):
         zclass = self.config.get('ZephyrPlugin', 'class')
         if zclass == '':
             return
-        p = subprocess.Popen(['zwrite', '-q', '-l', '-d',
+        command = self.config.get('ZephyrPlugin', 'command')
+        if not command:
+            command = 'zwrite'
+        p = subprocess.Popen([command, '-q', '-l', '-d',
                               '-c', zclass,
                               '-i', 'trac-#%s' % id],
                              stdin=subprocess.PIPE)
