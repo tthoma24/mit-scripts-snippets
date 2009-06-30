@@ -18,7 +18,7 @@ class ZephyrPlugin(Component):
                              ['-c', zclass,
                               '-i', 'trac-#%s' % id],
                              stdin=subprocess.PIPE)
-        p.stdin.write(message.encode('utf-8', 'replace'))
+        p.stdin.write(message.replace('@', '@@').encode('utf-8', 'replace'))
         p.stdin.close()
         p.wait()
     
