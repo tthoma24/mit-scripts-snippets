@@ -21,11 +21,17 @@ class ZephyrPlugin(Component):
         p.stdin.write(message.replace('@', '@@').encode('utf-8', 'replace'))
         p.stdin.close()
         p.wait()
+
+    def format_text(self, text):
+        lines = textwrap.fill(text).split('\n')
+        if len(lines) > 5:
+            lines = lines[:5] + [u'[…]']
+        return '\n'.join(lines)
     
     def ticket_created(self, ticket):
         message = "%s filed a new ticket:\n%s\n\n%s" % (ticket['reporter'],
                                                         ticket['summary'],
-                                                        textwrap.fill(ticket['description'][:255]))
+                                                        self.format_text(ticket['description']))
         self.zwrite(ticket.id, message)
     
     def ticket_changed(self, ticket, comment, author, old_values):
