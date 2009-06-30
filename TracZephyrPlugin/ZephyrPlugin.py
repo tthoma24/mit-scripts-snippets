@@ -35,7 +35,7 @@ class ZephyrPlugin(Component):
         self.zwrite(ticket.id, message)
     
     def ticket_changed(self, ticket, comment, author, old_values):
-        message = ''
+        message = "(%s)\n" % ticket['summary']
         for field in ticket.fields:
             name = field['name']
             if name not in old_values:
