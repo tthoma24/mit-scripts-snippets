@@ -11,7 +11,7 @@ class ZephyrPlugin(Component):
         zclass = self.config.get('ZephyrPlugin', 'class')
         if zclass == '':
             return
-        command = shlex.split(self.config.get('ZephyrPlugin', 'command'))
+        command = shlex.split(self.config.get('ZephyrPlugin', 'command').encode('utf-8'))
         if not command:
             command = ['zwrite', '-q', '-l', '-d']
         p = subprocess.Popen(command +
