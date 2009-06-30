@@ -2,6 +2,7 @@ from trac.core import *
 from trac.ticket import ITicketChangeListener
 import subprocess
 import textwrap
+import shlex
 
 class ZephyrPlugin(Component):
     implements(ITicketChangeListener)
@@ -10,7 +11,7 @@ class ZephyrPlugin(Component):
         zclass = self.config.get('ZephyrPlugin', 'class')
         if zclass == '':
             return
-        command = self.config.get('ZephyrPlugin', 'command').split(' ')
+        command = shlex.split(self.config.get('ZephyrPlugin', 'command'))
         if not command:
             command = ['zwrite', '-q', '-l', '-d']
         p = subprocess.Popen(command +
