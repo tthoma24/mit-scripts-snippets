@@ -35,14 +35,25 @@ class ZephyrPlugin(Component):
         self.zwrite(ticket.id, message)
     
     def ticket_changed(self, ticket, comment, author, old_values):
-        if old_values.has_key('status'):
-            if ticket['status'] == 'closed':
-                message = "%s closed ticket as %s\n(%s)" % (author, ticket['resolution'], ticket['summary'])
+        message = ''
+        for field in ticket.fields:
+            name = field['name']
+            if name not in old_values:
+                pass
+            elif field['type'] == 'textarea':
+                message += "%s changed %s to:\n%s\n" % (author, name, self.format_text(ticket[name]))
+            elif ticket[name] and old_values[name]:
+                message += "%s changed %s from %s to %s.\n" % (author, name, old_values[name], ticket[name])
+            elif ticket[name]:
+                message += "%s set %s to %s.\n" % (author, name, ticket[name])
+            elif old_values[name]:
+                message += "%s deleted %s.\n" % (author, name)
             else:
-                message = "%s set status to %s\n(%s)" % (author, ticket['status'], ticket['summary'])
-        else:
-            message = "%s updated this ticket\n(%s)" % (author, ticket['summary'])
+                message += "%s changed %s.\n" % (author, name)
+        if comment:
+            message += "%s commented:\n%s\n" % (author, self.format_text(comment))
         self.zwrite(ticket.id, message)
     
     def ticket_deleted(self, ticket):
-        pass
+        message = "%s deleted ticket %d" % (author, ticket.id)
+        self.zwrite(ticket.id, message)
