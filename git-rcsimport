@@ -12,11 +12,11 @@ if [ ! -d "$dir/RCS" ]; then
   exit 1
 fi
 
-tmpdir=`mktemp -d`
+tmpdir=`mktemp -d -t git-rcsimport`
 mkdir "$tmpdir/CVSROOT" "$tmpdir/locks" "$tmpdir/rcs"
 echo "LockDir=$tmpdir/locks" > "$tmpdir/CVSROOT/config"
 absdir=`cd "$dir"; pwd`
-(cd "$absdir"; find -name RCS -type d) | while read dir; do
+(cd "$absdir"; find . -name RCS -type d) | while read dir; do
     rcsdir=$tmpdir/rcs/`dirname "$dir"`
     mkdir -p "$rcsdir"
     ln -s "$absdir/$dir"/* "$rcsdir"
