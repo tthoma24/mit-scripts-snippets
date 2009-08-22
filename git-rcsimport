@@ -13,10 +13,13 @@ if [ ! -d "$dir/RCS" ]; then
 fi
 
 tmpdir=`mktemp -d`
-mkdir "$tmpdir/CVSROOT"
-mkdir "$tmpdir/locks"
+mkdir "$tmpdir/CVSROOT" "$tmpdir/locks" "$tmpdir/rcs"
 echo "LockDir=$tmpdir/locks" > "$tmpdir/CVSROOT/config"
-ln -s "`readlink -f "$dir"`/RCS" "$tmpdir/RCS"
-CVSROOT="$tmpdir" git cvsimport RCS "$@"
-rm "$tmpdir/RCS" # a bit paranoid about rm -r's competence
+absdir=`readlink -f "$dir"`
+(cd "$absdir"; find -name RCS -type d) | while read dir; do
+    rcsdir=$tmpdir/rcs/$(dirname "$dir")
+    mkdir -p "$rcsdir"
+    ln -s "$absdir/$dir"/* "$rcsdir"
+done
+CVSROOT="$tmpdir" git cvsimport "$@" rcs
 rm -r "$tmpdir"
