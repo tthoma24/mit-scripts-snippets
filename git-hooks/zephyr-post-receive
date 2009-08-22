@@ -31,7 +31,7 @@ while read oldrev newrev refname; do
       -m "New branch created."
     continue
   fi
-  git-rev-list --reverse "$oldrev..$newrev" | while read rev; do
+  git rev-list --reverse "$oldrev..$newrev" | while read rev; do
     shortrev=`git log -1 --pretty=format:%h "$rev"`
     (git show --stat $usecolor "$rev" |
      sed -e 's/@/@@/g' \
