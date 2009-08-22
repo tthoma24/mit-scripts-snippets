@@ -15,9 +15,9 @@ fi
 tmpdir=`mktemp -d`
 mkdir "$tmpdir/CVSROOT" "$tmpdir/locks" "$tmpdir/rcs"
 echo "LockDir=$tmpdir/locks" > "$tmpdir/CVSROOT/config"
-absdir=`readlink -f "$dir"`
+absdir=`cd "$dir"; pwd`
 (cd "$absdir"; find -name RCS -type d) | while read dir; do
-    rcsdir=$tmpdir/rcs/$(dirname "$dir")
+    rcsdir=$tmpdir/rcs/`dirname "$dir"`
     mkdir -p "$rcsdir"
     ln -s "$absdir/$dir"/* "$rcsdir"
 done
