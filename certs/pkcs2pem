@@ -1,0 +1,54 @@
+#!/bin/sh
+
+set -e
+
+usage() {
+    cat <<EOF
+Usage: $0 <pkcs12 file> <output directory>
+
+Transforms a .p12 file, for instance as exported by Firefox's
+cerfiticate "backup" feature, into a pair of a PEM certificate file
+and private key.
+
+To export your certificate from Firefox, go to Edit|Preferences,
+Advanced|Security|View Certificates, and ``Backup'' your certificate
+to a file. Firefox will save it as a PKCS12 certificate. You must
+enter a passphrase, which this script will prompt you for.
+
+EOF
+    exit 1
+}
+
+[ "$#" -eq 2 ] || usage
+
+pkcs="$1"
+outdir="$2"
+
+echo -n "Password for $pkcs: "
+stty -echo
+read pass
+stty echo
+echo
+
+echo "$pass" | openssl pkcs12 -in "$pkcs" -nodes -out "$outdir"/cert.pem -passin stdin
+echo "$pass" | openssl pkcs12 -in "$pkcs" -nodes -nocerts -out "$outdir"/privkey.pem -passin stdin
+
+cat >&2 <<EOF
+Certificate written to $outdir/cert.pem
+Private key written to $outdir/privkey.pem
+
+Keep these files safe!
+
+You can pass these to wget's --certificate and --private-key options,
+or to curl's --cert/--key options.
+
+To use them with perl's LWP, set the following environment variables:
+
+EOF
+
+outdir="$(readlink -f "$outdir")"
+
+# No, this doesn't handle quoting properly.
+echo HTTPS_CERT_FILE="$outdir/cert.pem"
+echo HTTPS_KEY_FILE="$outdir/privkey.pem"
+
