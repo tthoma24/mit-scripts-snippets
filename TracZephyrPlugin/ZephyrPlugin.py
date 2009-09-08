@@ -3,6 +3,7 @@
 from trac.core import *
 from trac.ticket import ITicketChangeListener
 import subprocess
+import re
 import textwrap
 import shlex
 
@@ -25,6 +26,7 @@ class ZephyrPlugin(Component):
         p.wait()
 
     def format_text(self, text):
+        text = re.sub(re.compile('^(?:> .*\n)+', re.MULTILINE), u'> […]\n', text)
         lines = textwrap.fill(text).split('\n')
         if len(lines) > 5:
             lines = lines[:5] + [u'[…]']
