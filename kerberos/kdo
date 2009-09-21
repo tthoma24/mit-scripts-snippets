@@ -24,7 +24,7 @@
 # interface to multiple credential caches by defining two functions:
 #
 #  - kcaches::
-#      Print one line per current credential cache of the form "<KRB5CCNAME> <PRINCIPAL>" 
+#      Print one line per current credential cache of the form "<PRINCIPAL> <KRB5CCNAME>"
 #  - knewcache::
 #      Without changing the current credentials cache, get credentials
 #      for the principal in $1, passing the remaining arguments to
@@ -43,7 +43,7 @@ kdo_args=(-l15m -r60m -F)
 # CC interface for OS X
 if [ "Darwin" = "$(uname)" ]; then
     kcaches () {
-        klist -A | awk '/^Kerberos 5 ticket cache:/ {cache = $5; princline=NR+1} NR==princline {print substr(cache, 2, length(cache)-2), $3}'
+        klist -A | perl -ne '$cache = $1 if /^Kerberos 5 ticket cache: '\''(.*)'\''/; print "$1 $cache\n" if /^Default principal: (.*)$/'
     }
 
     knewcache () {
@@ -66,7 +66,7 @@ fi
 # setup kdo. Otherwise, add a helpful error.
 if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
     kfindcache () {
-        kcaches | fgrep "$1" | awk '{print $1}'
+        kcaches | fgrep "$1" | cut -d' ' -f2-
     }
 
     kdo () {
@@ -90,7 +90,7 @@ if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
         local cur
         COMPREPLY=()
         cur="${COMP_WORDS[COMP_CWORD]}"
-        opts="$(kcaches | awk '{ print $2 }')"
+        opts="$(kcaches | awk '{ print $1 }')"
         case $COMP_CWORD in
             1)
                 COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
