@@ -33,7 +33,7 @@ while read oldrev newrev refname; do
   fi
   git rev-list --first-parent --reverse "$oldrev..$newrev" | while read rev; do
     shortrev=`git log -1 --pretty=format:%h "$rev"`
-    (git show --stat $usecolor "$rev" |
+    (git show --stat -M $usecolor "$rev" |
      sed -e 's/@/@@/g' \
          -e 's/}/@(})/g' \
          -e 's/\[m/}@{/g' \
