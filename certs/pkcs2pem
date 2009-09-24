@@ -4,11 +4,11 @@ set -e
 
 usage() {
     cat <<EOF
-Usage: $0 <pkcs12 file> <output directory>
+Usage: $0 <cert.p12> <cert.pem>
 
 Transforms a .p12 file, for instance as exported by Firefox's
-cerfiticate "backup" feature, into a pair of a PEM certificate file
-and private key.
+cerfiticate "backup" feature, into a PEM file that contains your
+private key and certificate.
 
 To export your certificate from Firefox, go to Edit|Preferences,
 Advanced|Security|View Certificates, and ``Backup'' your certificate
@@ -22,33 +22,23 @@ EOF
 [ "$#" -eq 2 ] || usage
 
 pkcs="$1"
-outdir="$2"
+pem="$2"
 
-echo -n "Password for $pkcs: "
-stty -echo
-read pass
-stty echo
-echo
-
-echo "$pass" | openssl pkcs12 -in "$pkcs" -nodes -out "$outdir"/cert.pem -passin stdin
-echo "$pass" | openssl pkcs12 -in "$pkcs" -nodes -nocerts -out "$outdir"/privkey.pem -passin stdin
+openssl pkcs12 -in "$pkcs" -nodes -out "$pem"
 
 cat >&2 <<EOF
-Certificate written to $outdir/cert.pem
-Private key written to $outdir/privkey.pem
+Private key and certificate written to $pem
 
-Keep these files safe!
+Keep this file safe!
 
-You can pass these to wget's --certificate and --private-key options,
-or to curl's --cert/--key options.
+You can pass this to wget's --certificate and --private-key options,
+or to curl's --cert option.
 
-To use them with perl's LWP, set the following environment variables:
+To use it with perl's LWP, set the following environment variables:
 
 EOF
 
-outdir="$(readlink -f "$outdir")"
-
 # No, this doesn't handle quoting properly.
-echo HTTPS_CERT_FILE="$outdir/cert.pem"
-echo HTTPS_KEY_FILE="$outdir/privkey.pem"
+echo HTTPS_CERT_FILE="$pem"
+echo HTTPS_KEY_FILE="$pem"
 
