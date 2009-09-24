@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -40,7 +40,6 @@ EOF
 
 pem=$(readlink -f "$pem")
 
-# No, this doesn't handle quoting properly.
-echo HTTPS_CERT_FILE="$pem"
-echo HTTPS_KEY_FILE="$pem"
+printf 'HTTPS_CERT_FILE=%q\n' "$pem"
+printf 'HTTPS_KEY_FILE=%q\n' "$pem"
 
