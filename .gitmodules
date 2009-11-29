@@ -1,0 +1,3 @@
+[submodule "sipbmp3-itunes"]
+	path = sipbmp3-itunes
+	url = /afs/sipb/project/sipbmp3/itunes-plugin.git
