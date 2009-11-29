@@ -18,6 +18,18 @@ else
     usecolor=""
 fi
 
+if [ -z "$zsig" ]; then
+    if [ -e "$GIT_DIR/description" ]; then
+        zsig=`cat "$GIT_DIR/description"`
+    fi
+    if [ -z "$zsig" ] || [ "$zsig" = "Unnamed repository; edit this file to name it for gitweb." ]; then
+        zsig=$(basename "$(readlink -f "$GIT_DIR")")
+        if [ "$zsig" = ".git" ]; then
+            zsig=$(basename "$(readlink -f "$GIT_DIR/..")")
+        fi
+    fi
+fi
+
 if [ -z "$class" ]; then
   echo "I don't know where to send a commit zephyr!" >&2
   echo "Please set the zephyr.class config variable in" >&2
@@ -27,7 +39,7 @@ fi
 while read oldrev newrev refname; do
   if [ "$oldrev" = "0000000000000000000000000000000000000000" ]; then
     # dammit git
-    zwrite -c "$class" -i "$(basename "$refname")" -s "${zsig:-Git}: $refname" -d \
+    zwrite -c "$class" -i "$(basename "$refname")" -s "$zsig: $refname" -d \
       -m "New branch created."
     continue
   fi
@@ -42,6 +54,6 @@ while read oldrev newrev refname; do
          -e 's/\[32m/@color(green)/g' \
          -e '1s/^/@{/' \
          -e '$s/$/}/') |
-    zwrite -c "$class" -i "${instance:-$shortrev}" -s "${zsig:-Git}: $refname" -d
+    zwrite -c "$class" -i "${instance:-$shortrev}" -s "$zsig: $refname" -d
   done
 done
