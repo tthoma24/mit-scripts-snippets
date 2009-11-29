@@ -9,9 +9,14 @@ cd snippets
 git commit item
 git push
 
-If you're not on gsipb and want to commit, ask e.g. geofft for access. You
-can't write to the top level checkout here, but if you push (to the master
-branch) from your own checkout, it will automatically update this checkout.
+If you're not on gsipb and want to commit, ask geofft (or someone on
+sipb-acl) to add you to snippets-committers. You can't write to
+/mit/snippets directly, but if you push (to the master branch) from your
+own checkout, it will automatically update this checkout.
 
 There's a (currently very simple) web interface at
 http://snippets.scripts.mit.edu/
+
+snippets has support for submodules, if things outgrow this repository.
+You can use 'git submodule update --init' to populate them if you want,
+or look at .gitmodules to find where they live now.
