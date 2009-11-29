@@ -39,8 +39,8 @@ fi
 while read oldrev newrev refname; do
   if [ "$oldrev" = "0000000000000000000000000000000000000000" ]; then
     # dammit git
-    zwrite -c "$class" -i "$(basename "$refname")" -s "$zsig: $refname" -d \
-      -m "New branch created."
+    zwrite -c "$class" -i "${instance:-$(basename "$refname")}" -s "$zsig: $refname" -d \
+      -m "New branch $refname created, currently at $newrev."
     continue
   fi
   git rev-list --first-parent --reverse "$oldrev..$newrev" | while read rev; do
