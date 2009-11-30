@@ -12,7 +12,7 @@ if [ ! -d "$dir/RCS" ]; then
   exit 1
 fi
 
-tmpdir=`mktemp -d -t git-rcsimport`
+tmpdir=`mktemp -d -t git-rcsimport-XXXXXXXXXX`
 mkdir "$tmpdir/CVSROOT" "$tmpdir/locks" "$tmpdir/rcs"
 echo "LockDir=$tmpdir/locks" > "$tmpdir/CVSROOT/config"
 absdir=`cd "$dir"; pwd`
