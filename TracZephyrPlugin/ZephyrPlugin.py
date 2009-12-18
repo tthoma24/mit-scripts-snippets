@@ -7,6 +7,8 @@ import re
 import textwrap
 import shlex
 
+quoted_re = re.compile('^(?:> ?\n)*> .+\n(?:>(?: .*)?\n)*', re.MULTILINE)
+
 class ZephyrPlugin(Component):
     implements(ITicketChangeListener)
     
@@ -26,7 +28,7 @@ class ZephyrPlugin(Component):
         p.wait()
 
     def format_text(self, text):
-        text = re.sub(re.compile('^(?:> .*\n)+', re.MULTILINE), u'> […]\n', text)
+        text = re.sub(quoted_re, u'> […]\n', text)
         lines = textwrap.fill(text).split('\n')
         if len(lines) > 5:
             lines = lines[:5] + [u'[…]']
