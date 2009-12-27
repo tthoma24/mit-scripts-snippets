@@ -9,6 +9,8 @@
 # /mit/snippets/svn-hooks/commit-zephyr "$REPOS" "$REV" -c scripts
 # /mit/snippets/svn-hooks/commit-zephyr "$REPOS" "$REV" --full -c scripts-auto -i commits
 
+export LC_ALL=en_US.UTF-8
+
 CLASS=test
 INSTANCE=@
 FULL=0
