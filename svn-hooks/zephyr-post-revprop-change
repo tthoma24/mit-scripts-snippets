@@ -1,0 +1,11 @@
+#!/bin/sh
+
+REPOS="$1"
+REV="$2"
+USER="$3"
+PROPNAME="$4"
+OLD_VAL="$(cat)"
+NEW_VAL="$(svnlook propget --revprop -r "$REV" "$REPOS" "$PROPNAME")"
+#export PATH="/usr/bin:/bin"
+
+(echo "$USER @(@color(red)changing revprop) @b($PROPNAME)"; echo "from: $OLD_VAL"; echo "to: $NEW_VAL") | zwrite -d -c test -i "r$REV"
