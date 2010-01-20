@@ -25,7 +25,7 @@ BarnOwl::new_command(decrypt => sub {
    my ($zo, $zi);
    my $pid = open2($zo, $zi, '/mit/outland/bin/zcrypt', '-D', @args) or die "Couldn't launch zcrypt\n";
    my $decrypted;
-   print $zi $msg->body . "\n";
+   print $zi $msg->fields[1] . "\n";
    close $zi;
    while (<$zo>) {
       chomp;
