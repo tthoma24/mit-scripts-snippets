@@ -17,3 +17,17 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
             return name
         else:
             return username
+    def configure_user(self, user, ):
+        username = user.username
+        import ldap
+        con = ldap.open('ldap.mit.edu')
+        con.simple_bind_s("", "")
+        dn = "dc=mit,dc=edu"
+        fields = ['cn', 'sn', 'givenName', 'mail', ]
+        result = con.search_s('dc=mit,dc=edu', ldap.SCOPE_SUBTREE, 'uid=%s'%username, fields)
+        if len(result) == 1:
+            user.first_name = result[0][1]['givenName'][0]
+            user.last_name = result[0][1]['sn'][0]
+            user.email = result[0][1]['mail'][0]
+            user.save()
+        return user
