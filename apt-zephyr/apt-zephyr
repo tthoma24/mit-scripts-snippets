@@ -87,14 +87,14 @@ parse_v2 ()
 read -r line
 case "$line" in
     'VERSION 2')
-	parse_v2
+	parse_v2 | send_zephyr
 	;;
     'VERSION *')
-	echo "$0: unrecognized version: $line"
+	echo "$0: unrecognized version: $line" | send-zephyr
 	;;
     '')
 	;;
     *)
-	(echo "$line"; cat) | parse_v1
+	(echo "$line"; cat) | parse_v1 | send_zephyr
 	;;
-esac | send_zephyr
+esac
