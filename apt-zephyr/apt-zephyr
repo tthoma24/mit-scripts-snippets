@@ -49,6 +49,26 @@ package ()
     fi
 }
 
+parse_v1 ()
+{
+    oldpkgs=$(mktemp -t "apt-zephyr-old.XXXXXX") || exit $?
+    newpkgs=$(mktemp -t "apt-zephyr-new.XXXXXX") || exit $?
+    xargs -r -d '\n' dpkg-deb -W | sort -o "$newpkgs"
+    cut -f 1 "$newpkgs" | xargs -r -d '\n' dpkg-query -W | \
+	sort -o "$oldpkgs"
+    join -t '	' -j 1 -e '-' "$oldpkgs" "$newpkgs" | \
+	while IFS='	' read -r package oldver newver; do
+	if dpkg --compare-versions "$oldver" lt "$newver"; then
+	    package "$package" "$oldver" '<' "$newver"
+	elif dpkg --compare-versions "$oldver" eq "$newver"; then
+	    package "$package" "$oldver" '=' "$newver"
+	else
+	    package "$package" "$oldver" '>' "$newver"
+	fi
+    done
+    rm -f "$oldpkgs" "$newpkgs"
+}
+
 read -r line
 case "$line" in
     'VERSION 2')
@@ -70,21 +90,6 @@ case "$line" in
     '')
 	;;
     *)
-	oldpkgs=$(mktemp -t "apt-zephyr-old.XXXXXX") || exit $?
-	newpkgs=$(mktemp -t "apt-zephyr-new.XXXXXX") || exit $?
-	(echo "$line"; cat) | xargs -r -d '\n' dpkg-deb -W | sort -o "$newpkgs"
-	cut -f 1 "$newpkgs" | xargs -r -d '\n' dpkg-query -W | \
-	    sort -o "$oldpkgs"
-	join -t '	' -j 1 -e '-' "$oldpkgs" "$newpkgs" | \
-	    while IFS='	' read -r package oldver newver; do
-	    if dpkg --compare-versions "$oldver" lt "$newver"; then
-		package "$package" "$oldver" '<' "$newver"
-	    elif dpkg --compare-versions "$oldver" eq "$newver"; then
-		package "$package" "$oldver" '=' "$newver"
-	    else
-		package "$package" "$oldver" '>' "$newver"
-	    fi
-	done
-	rm -f "$oldpkgs" "$newpkgs"
+	(echo "$line"; cat) | parse_v1
 	;;
 esac | send_zephyr
