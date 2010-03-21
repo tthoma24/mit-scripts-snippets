@@ -69,20 +69,25 @@ parse_v1 ()
     rm -f "$oldpkgs" "$newpkgs"
 }
 
+parse_v2 ()
+{
+    while read -r line && [ -n "$line" ]; do :; done
+    while read -r package oldver cmp newver action; do
+	case "$action" in
+	    '**CONFIGURE**' | '**REMOVE**')
+		package "$package" "$oldver" "$cmp" "$newver"
+		;;
+	    '**ERROR**')
+		echo "ERROR on $package $newver"
+		;;
+	esac
+    done
+}
+
 read -r line
 case "$line" in
     'VERSION 2')
-	while read -r line && [ -n "$line" ]; do :; done
-	while read -r package oldver cmp newver action; do
-	    case "$action" in
-		'**CONFIGURE**' | '**REMOVE**')
-		    package "$package" "$oldver" "$cmp" "$newver"
-		    ;;
-		'**ERROR**')
-		    echo "ERROR on $package $newver"
-		    ;;
-	    esac
-	done
+	parse_v2
 	;;
     'VERSION *')
 	echo "$0: unrecognized version: $line"
