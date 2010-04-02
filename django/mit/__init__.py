@@ -1,6 +1,7 @@
 from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib.auth.backends import RemoteUserBackend
 from django.contrib import auth
+from django.core.exceptions import ObjectDoesNotExist
 
 def zephyr(msg, clas='remit', instance='log', rcpt='adehnert',):
     import os
@@ -29,5 +30,13 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
             user.first_name = result[0][1]['givenName'][0]
             user.last_name = result[0][1]['sn'][0]
             user.email = result[0][1]['mail'][0]
+            try:
+                user.groups.add(auth.models.Group.objects.get(name='mit'))
+            except ObjectDoesNotExist:
+                print "Failed to retrieve mit group"
             user.save()
+        try:
+            user.groups.add(auth.models.Group.objects.get(name='autocreated'))
+        except ObjectDoesNotExist:
+            print "Failed to retrieve autocreated group"
         return user
