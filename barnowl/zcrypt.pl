@@ -1,6 +1,6 @@
 # BarnOwls older than late September 2008 will segfault on short zcrypt messages.
 # Besides, the code is sketchy and doesn't belong in core. This perl module
-# will add :zcrypt and :decrypt commands that use outland's zcrypt binary via
+# will add :zcrypt and :decrypt commands that use barnowl's zcrypt binary via
 # Perl, so a bug in zcrypt can't possibly affect BarnOwl proper. The :zcrypt
 # command replaces the built-in one.
 #
@@ -23,7 +23,7 @@ BarnOwl::new_command(decrypt => sub {
        @args = ('-c', $msg->class, '-i', $msg->instance);
    }
    my ($zo, $zi);
-   my $pid = open2($zo, $zi, '/mit/outland/bin/zcrypt', '-D', @args) or die "Couldn't launch zcrypt\n";
+   my $pid = open2($zo, $zi, 'athrun', 'barnowl', 'zcrypt', '-D', @args) or die "Couldn't launch zcrypt\n";
    my $decrypted;
    print $zi @{$msg->fields}[1] . "\n";
    close $zi;
@@ -37,7 +37,7 @@ BarnOwl::new_command(decrypt => sub {
    },
    {summary => "Decrypt a zcrypted message once",
     usage => "decrypt [args]",
-    description => "Invokes /mit/outland/bin/zcrypt on the current message,\n
+    description => "Invokes athrun barnowl zcrypt on the current message,\n
 using the class and instance to find the crypt key, and pops up the\n
 decrypted output. If args are specified, they are passed to zcrypt and the\n
 class and instance are ignored.\n\n
@@ -47,10 +47,10 @@ BarnOwl::new_command(zcrypt => sub {
    my $cmd = shift;
    my @args = @_;
    my $argstring = join ' ', @args;
-   BarnOwl::start_edit_win("/mit/outland/bin/zcrypt $argstring", sub {
+   BarnOwl::start_edit_win("athrun barnowl zcrypt $argstring", sub {
       my $msg = shift;
       my ($zo, $zi);
-      my $pid = open2($zo, $zi, '/mit/outland/bin/zcrypt', @args);
+      my $pid = open2($zo, $zi, 'athrun', 'barnowl', 'zcrypt', @args);
       print $zi "$msg\n";
       close $zi;
       local $/;
@@ -58,7 +58,7 @@ BarnOwl::new_command(zcrypt => sub {
       waitpid $pid, 0;
       });
    },
-   {summary => "Run /mit/outland/bin/zcrypt",
+   {summary => "Run athrun barnowl zcrypt",
     usage => "zcrypt -c [class] -i [instance]",
-    description => "Calls /mit/outland/bin/zcrypt on a message you type in.\n\n
+    description => "Calls athrun barnowl zcrypt on a message you type in.\n\n
 SEE ALSO: zcrypt(1)"});
