@@ -46,7 +46,8 @@ SEE ALSO: zcrypt(1)"});
 BarnOwl::new_command(zcrypt => sub {
    my $cmd = shift;
    my @args = @_;
-   my $argstring = join ' ', @args;
+   #my $argstring = BarnOwl::quote(@args);  # requires BarnOwl 1.4
+   my $argstring = join ' ', map { BarnOwl::quote($_) } @args;
    BarnOwl::start_edit_win("athrun barnowl zcrypt $argstring", sub {
       my $msg = shift;
       my ($zo, $zi);
