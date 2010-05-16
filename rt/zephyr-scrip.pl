@@ -45,9 +45,9 @@ local $SIG{__DIE__} = sub {
     send_notice "${instance_prefix}error", "Internal error in Zephyr scrip:\n$err";
 };
 
-(my $id = $self->TicketObj->id) =~ s/@/@@/g;
+(my $id = $self->TransactionObj->Ticket) =~ s/@/@@/g;
 (my $description = $self->TransactionObj->Description) =~ s/@/@@/g;
-(my $subject = $self->TicketObj->Subject) =~ s/@/@@/g;
+(my $subject = $self->TransactionObj->TicketObj->Subject) =~ s/@/@@/g;
 
 send_notice "$instance_prefix$id", $description, $subject;
 1;
