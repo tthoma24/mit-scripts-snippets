@@ -20,6 +20,7 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
             return username
     def configure_user(self, user, ):
         username = user.username
+        user.password = "ScriptsSSLAuth"
         import ldap
         con = ldap.open('ldap.mit.edu')
         con.simple_bind_s("", "")
@@ -34,9 +35,9 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
                 user.groups.add(auth.models.Group.objects.get(name='mit'))
             except ObjectDoesNotExist:
                 print "Failed to retrieve mit group"
-            user.save()
         try:
             user.groups.add(auth.models.Group.objects.get(name='autocreated'))
         except ObjectDoesNotExist:
             print "Failed to retrieve autocreated group"
+        user.save()
         return user
