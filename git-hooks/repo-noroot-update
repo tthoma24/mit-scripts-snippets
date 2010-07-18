@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# A hook script that blocks committer and author names that are
+# root (or a configured blacklisted name).
+# XXX: should allow only applying this to certain branches.
+#
+# Called by "git receive-pack" with arguments: refname sha1-old sha1-new
+#
+# Config
+# ------
+# hooks.noroot.branches
+#   List of branches for which commits by root should be disallowed.
+# hooks.noroot.match
+#   XXX: figure out format
+#
+
+set -e
+
+# --- Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# --- Safety check
+if [ -z "$GIT_DIR" ]; then
+	echo "Don't run this script from the command line." >&2
+	echo " (if you want, you could supply GIT_DIR then run" >&2
+	echo "  $0 <ref> <oldrev> <newrev>)" >&2
+	exit 1
+fi
+
+if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
+	echo "Usage: $0 <ref> <oldrev> <newrev>" >&2
+	exit 1
+fi
+
+# --- Config
+branches=$(git config --get hooks.noroot.branches || echo "")
+# XXX: hooks.noroot.match
+
+# --- Check types
+# if $newrev is 0000...0000, it's a commit to delete a ref.
+zero="0000000000000000000000000000000000000000"
+if [ "$newrev" = "$zero" ]; then
+	newrev_type=delete
+else
+	newrev_type=$(git cat-file -t $newrev)
+fi
+
+case "$refname","$newrev_type" in
+	refs/heads/*,commit)
+		git log --pretty="format:%h \"%an\" \"%cn\"%n" "$oldrev".."$newrev" | \
+		while read hash an cn; do
+			if [ "$an" = "\"root\"" -o "$cn" = "\"root\"" ]; then
+				echo "*** Committing as root not allowed in this repository," >&2
+				echo "*** Please fix your GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL,"
+				echo "*** GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL."
+				echo "*** Offending commit was $hash."
+				exit 1
+			fi
+		done
+		;;
+	refs/remotes/*,commit)
+		# tracking branch
+		;;
+	refs/tags/*,*)
+		# we could track tags, but we've decided they're not
+		# interesting
+		;;
+	*,delete)
+		# not interesting
+		;;
+	*)
+		# Anything else (is there anything else?)
+		echo "*** Update hook: unknown type of update to ref $refname of type $newrev_type" >&2
+		exit 1
+		;;
+esac
+
+# --- Finished
+exit 0
