@@ -1,0 +1,6 @@
+#!/bin/sh
+
+file=$(mktemp)
+echo "$*" | xxd -r -p > "$file"
+objdump -D -b binary -m i386 "$file" | tail -n +7
+rm "$file"
