@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script is run after receive-pack has accepted a pack and the
 # repository has been updated.  It is passed arguments in through stdin
@@ -25,9 +25,9 @@ if [ -z "$zsig" ]; then
     if [ -z "$zsig" ] || \
         [ "$zsig" = "Unnamed repository; edit this file to name it for gitweb." ] || \
         [ "$zsig" = "Unnamed repository; edit this file 'description' to name the repository." ]; then
-        zsig=$(basename "$(readlink -f "$GIT_DIR")")
+        zsig=$(basename "$(cd "$GIT_DIR" && pwd)")
         if [ "$zsig" = ".git" ]; then
-            zsig=$(basename "$(readlink -f "$GIT_DIR/..")")
+            zsig=$(basename "$(cd "$GIT_DIR/.." && pwd)")
         fi
     fi
 fi
