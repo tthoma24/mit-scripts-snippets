@@ -21,12 +21,10 @@ my @zwrite = ('/usr/athena/bin/zwrite', '-d', '-O', 'auto', '-c', $class);
 # scrip as follows.
 #
 #   Description: Send Zephyr
-#   Condition: User Defined
+#   Condition: On Transaction
 #   Action: User Defined
 #   Template: Global template: Blank
 #   Stage: TransactionCreate
-#   Custom condition:
-#     1;
 #   Custom action preparation code:
 #     1;
 #   Custom action cleanup code:
