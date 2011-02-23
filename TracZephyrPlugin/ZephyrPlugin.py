@@ -38,8 +38,12 @@ class ZephyrPlugin(Component):
         return '\n'.join(lines)
     
     def ticket_created(self, ticket):
-        message = "%s filed a new %s ticket:\n%s\n\n%s" % (ticket['reporter'],
+        ttype='ticket'
+        if ticket['type'] != 'defect':
+            ttype=ticket['type']
+        message = "%s filed a new %s %s:\n%s\n\n%s" % (ticket['reporter'],
                                                            ticket['priority'],
+                                                           ttype,
                                                            ticket['summary'],
                                                            self.format_text(ticket['description']))
         self.zwrite(ticket.id, message)
