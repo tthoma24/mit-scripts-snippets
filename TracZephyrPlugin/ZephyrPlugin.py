@@ -22,6 +22,9 @@ class ZephyrPlugin(Component):
         opcode = self.config.get('ZephyrPlugin', 'opcode')
         if opcode:
             command += ['-O', opcode]
+        signature = self.config.get('ZephyrPlugin', 'signature')
+        if signature:
+            command += ['-s', signature]
         p = subprocess.Popen(command +
                              ['-c', zclass,
                               '-i', 'trac-#%s' % id],
