@@ -11,7 +11,7 @@ from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 import settings
 
-def zephyr(msg, clas='remit', instance='log', rcpt='adehnert',):
+def zephyr(msg, clas='message', instance='log', rcpt='nobody',):
     proc = subprocess.Popen(
         ['zwrite', '-d', '-n', '-c', clas, '-i', instance, rcpt, ],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE
