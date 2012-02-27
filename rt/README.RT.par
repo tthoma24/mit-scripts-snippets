@@ -1,0 +1,11 @@
+Barnowl RT module
+
+To install add RT.par to your modules directory in you bawnowl config
+directory (usually ~/.owl/modules)
+
+Go to help.mit.edu to set you rt password
+
+In ~/.rtrc add the following lines:
+user <username>
+passwd <rtpassword>
+
