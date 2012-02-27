@@ -9,3 +9,7 @@ In ~/.rtrc add the following lines:
 user <username>
 passwd <rtpassword>
 
+
+Source is located at /mit/pweaver/git/rt-barnowl.git/
+Email rt-barnowl if you would like commit access or if you have
+questions or bugs.
