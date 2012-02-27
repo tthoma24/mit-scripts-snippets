@@ -1,7 +1,7 @@
 Barnowl RT module
 
-To install add RT.par to your modules directory in you bawnowl config
-directory (usually ~/.owl/modules)
+To install barnowl RT 
+ln -s /mit/snippets/rt/BarnOwl ~/.owl/modules/RT
 
 Go to help.mit.edu to set you rt password
 
@@ -10,6 +10,6 @@ user <username>
 passwd <rtpassword>
 
 
-Source is located at /mit/pweaver/git/rt-barnowl.git/
+Source tree is located at /mit/pweaver/git/rt-barnowl.git/
 Email rt-barnowl if you would like commit access or if you have
 questions or bugs.
