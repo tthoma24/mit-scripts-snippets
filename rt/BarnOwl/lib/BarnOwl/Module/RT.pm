@@ -107,12 +107,15 @@ sub run_rt_command{
     my @args = ("athrun","tooltime","rt");
     push (@args, @_);
     local(*IN, *OUT, *ERR);
-    open3(*IN, *OUT, *ERR, @args) || die("RT threw $!");
+    my $pid = open3(*IN, *OUT, *ERR, @args) || die("RT threw $!");
     close(*IN); 
     my $out = do { local $/; <OUT> };
     close(*OUT);
     $out .= do { local $/; <ERR> };
     close(*ERR);
+
+    waitpid( $pid, 0 );
+
     if (($out =~ tr/\n//) eq 1){
 	return $out;
     }
