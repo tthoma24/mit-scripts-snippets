@@ -38,14 +38,26 @@ if [ -z "$class" ]; then
   echo "$PWD/config." >&2
   exit 1
 fi
+
+let max=10
+check_max () {
+  if ! let --max; then
+    zwrite -c "$class" -i "${instance:-git}" -s "Aperture Science Emergency Intelligence Incinerator" -d \
+      -m 'Aborting zephyr hook to prevent zwrite flood.'
+    exit 0
+  fi
+}
+
 while read oldrev newrev refname; do
   if [ "$oldrev" = "0000000000000000000000000000000000000000" ]; then
+    check_max
     # dammit git
     zwrite -c "$class" -i "${instance:-${refname#refs/heads/}}" -s "$zsig: $refname" -d \
       -m "New branch $refname created, currently at $newrev."
     continue
   fi
-  git rev-list --first-parent --reverse "$oldrev..$newrev" | while read rev; do
+  while read rev; do
+    check_max
     shortrev=`git log -1 --pretty=format:%h "$rev"`
     (git show --stat -M $usecolor "$rev" |
      sed -e 's/@/@@/g' \
@@ -57,5 +69,5 @@ while read oldrev newrev refname; do
          -e '1s/^/@{/' \
          -e '$s/$/}/') |
     zwrite -c "$class" -i "${instance:-$shortrev}" -s "$zsig: $refname" -d
-  done
+  done < <(git rev-list --first-parent --reverse "$oldrev..$newrev")
 done
