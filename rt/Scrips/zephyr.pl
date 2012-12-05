@@ -3,7 +3,7 @@ my $instance_prefix = 'rt.';
 my @zwrite = ('/usr/athena/bin/zwrite', '-d', '-O', 'auto', '-c', $class);
 
 # RT-to-Zephyr notification scrip
-# http://snippets.scripts.mit.edu/gitweb.cgi/.git/blob/HEAD:/rt/zephyr-scrip.pl
+# http://snippets.scripts.mit.edu/gitweb.cgi/.git/blob/HEAD:/rt/Scrips/zephyr.pl
 #
 # Copyright © 2010 Anders Kaseorg <andersk@mit.edu>
 #
