@@ -24,7 +24,7 @@ my @zwrite = ('/usr/athena/bin/zwrite', '-d', '-O', 'auto', '-c', $class);
 #   Condition: User Defined
 #   Action: User Defined
 #   Template: Global template: Blank
-#   Stage: TrasnactionCreate
+#   Stage: TransactionCreate
 #   Custom condition:
 #     1;
 #   Custom action preparation code:
