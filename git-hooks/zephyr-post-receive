@@ -61,15 +61,16 @@ while read oldrev newrev refname; do
     check_max
     shortrev=`git log -1 --pretty=format:%h "$rev"`
     lines=`git show -M "$rev" | wc -l`
-    cmd="git show --stat -M $usecolor $rev"
     if [ $lines -lt $maxlines ]; then
-	cmd="git show -M $usecolor $rev"
+        stat=""
+    else
+        stat="--stat"
     fi
-    ($cmd |
+    (git show -M $stat $usecolor "$rev" |
      sed -e 's/@/@@/g' \
          -e 's/}/@(})/g' \
          -e 's/\[m/}@{/g' \
-	 -e 's/\[1m/}@b{/g' \
+         -e 's/\[1m/}@b{/g' \
          -e 's/\[33m/@color(yellow)/g' \
          -e 's/\[31m/@color(red)/g' \
          -e 's/\[32m/@color(green)/g' \
