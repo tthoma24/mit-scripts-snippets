@@ -11,6 +11,7 @@ class=`git config zephyr.class`
 instance=`git config zephyr.instance`
 zsig=`git config zephyr.zsig`
 color=`git config --bool zephyr.color`
+maxlines=`git config --int zephyr.maxlines 2>/dev/null || echo 50`
 
 if [ "${color:-true}" = "true" ]; then
     usecolor="--color"
@@ -59,13 +60,20 @@ while read oldrev newrev refname; do
   while read rev; do
     check_max
     shortrev=`git log -1 --pretty=format:%h "$rev"`
-    (git show --stat -M $usecolor "$rev" |
+    lines=`git show -M "$rev" | wc -l`
+    cmd="git show --stat -M $usecolor $rev"
+    if [ $lines -lt $maxlines ]; then
+	cmd="git show -M $usecolor $rev"
+    fi
+    ($cmd |
      sed -e 's/@/@@/g' \
          -e 's/}/@(})/g' \
          -e 's/\[m/}@{/g' \
+	 -e 's/\[1m/}@b{/g' \
          -e 's/\[33m/@color(yellow)/g' \
          -e 's/\[31m/@color(red)/g' \
          -e 's/\[32m/@color(green)/g' \
+         -e 's/\[36m/@color(cyan)/g' \
          -e '1s/^/@{/' \
          -e '$s/$/}/') |
     zwrite -c "$class" -i "${instance:-$shortrev}" -s "$zsig: $refname" -d
