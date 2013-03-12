@@ -92,7 +92,7 @@ pre_install_pkgs ()
 	    parse_v2 | send_zephyr
 	    ;;
 	'VERSION *')
-	    echo "$0: unrecognized version: $line" | send-zephyr
+	    echo "$0: unrecognized version: $line" | send_zephyr
 	    ;;
 	'')
 	    ;;
