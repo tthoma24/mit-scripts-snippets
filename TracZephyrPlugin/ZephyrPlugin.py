@@ -12,7 +12,7 @@ quoted_re = re.compile('^(?:> ?\n)*> .+\n(?:>(?: .*)?\n)*', re.MULTILINE)
 class ZephyrPlugin(Component):
     implements(ITicketChangeListener)
     
-    def zwrite(self, id, message):
+    def zwrite(self, id, message, extra_sig=None):
         zclass = self.config.get('ZephyrPlugin', 'class')
         if zclass == '':
             return
@@ -23,6 +23,11 @@ class ZephyrPlugin(Component):
         if opcode:
             command += ['-O', opcode]
         signature = self.config.get('ZephyrPlugin', 'signature')
+        if extra_sig:
+            if signature:
+                signature = "%s: %s" % (signature, extra_sig, )
+            else:
+                signature = extra_sig
         if signature:
             command += ['-s', signature]
         p = subprocess.Popen(command +
@@ -40,6 +45,9 @@ class ZephyrPlugin(Component):
             lines = lines[:5] + [u'[…]']
         return '\n'.join(lines)
     
+    def get_url(self, ticket):
+        return ticket.env.abs_href.ticket(ticket.id)
+
     def ticket_created(self, ticket):
         ttype='ticket'
         if ticket['type'] != 'defect':
@@ -49,7 +57,7 @@ class ZephyrPlugin(Component):
                                                            ttype,
                                                            ticket['summary'],
                                                            self.format_text(ticket['description']))
-        self.zwrite(ticket.id, message)
+        self.zwrite(ticket.id, message, extra_sig=self.get_url(ticket))
     
     def ticket_changed(self, ticket, comment, author, old_values):
         message = "(%s)\n" % ticket['summary']
@@ -69,8 +77,8 @@ class ZephyrPlugin(Component):
                 message += "%s changed %s.\n" % (author, name)
         if comment:
             message += "%s commented:\n%s\n" % (author, self.format_text(comment))
-        self.zwrite(ticket.id, message)
+        self.zwrite(ticket.id, message, extra_sig=self.get_url(ticket))
     
     def ticket_deleted(self, ticket):
         message = "%s deleted ticket %d" % (author, ticket.id)
-        self.zwrite(ticket.id, message)
+        self.zwrite(ticket.id, message, extra_sig=self.get_url(ticket))
