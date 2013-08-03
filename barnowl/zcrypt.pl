@@ -1,18 +1,10 @@
-# BarnOwls older than late September 2008 will segfault on short zcrypt messages.
-# Besides, the code is sketchy and doesn't belong in core. This perl module
-# will add :zcrypt and :decrypt commands that use barnowl's zcrypt binary via
-# Perl, so a bug in zcrypt can't possibly affect BarnOwl proper. The :zcrypt
-# command replaces the built-in one.
+# This perl module adds a :decrypt command that uses barnowl's zcrypt
+# binary via Perl to decrypt zcrypt'd zephyrs after they have been
+# received.
 #
 # To use this code, type
 #   :perl do '/mit/snippets/barnowl/zcrypt.pl'
 #
-# This first line will disable BarnOwl's own zcrypt code, so messages are
-# encrypted onscreen. Use :decrypt to display them. (Security bugs were later
-# found in the decryption code, although these probably affect locker zcrypt
-# too.)
-
-BarnOwl::command("unset zcrypt");
 
 use IPC::Open2;
 BarnOwl::new_command(decrypt => sub {
@@ -25,7 +17,7 @@ BarnOwl::new_command(decrypt => sub {
    my ($zo, $zi);
    my $pid = open2($zo, $zi, 'athrun', 'barnowl', 'zcrypt', '-D', @args) or die "Couldn't launch zcrypt\n";
    my $decrypted;
-   print $zi @{$msg->fields}[1] . "\n";
+   print $zi $msg->fields->[1] . "\n";
    close $zi;
    while (<$zo>) {
       chomp;
@@ -43,23 +35,4 @@ decrypted output. If args are specified, they are passed to zcrypt and the\n
 class and instance are ignored.\n\n
 SEE ALSO: zcrypt(1)"});
 
-BarnOwl::new_command(zcrypt => sub {
-   my $cmd = shift;
-   my @args = @_;
-   #my $argstring = BarnOwl::quote(@args);  # requires BarnOwl 1.4
-   my $argstring = join ' ', map { BarnOwl::quote($_) } @args;
-   BarnOwl::start_edit_win("athrun barnowl zcrypt $argstring", sub {
-      my $msg = shift;
-      my ($zo, $zi);
-      my $pid = open2($zo, $zi, 'athrun', 'barnowl', 'zcrypt', @args);
-      print $zi "$msg\n";
-      close $zi;
-      local $/;
-      BarnOwl::message(<$zo>);
-      waitpid $pid, 0;
-      });
-   },
-   {summary => "Run athrun barnowl zcrypt",
-    usage => "zcrypt -c [class] -i [instance]",
-    description => "Calls athrun barnowl zcrypt on a message you type in.\n\n
-SEE ALSO: zcrypt(1)"});
+1;
