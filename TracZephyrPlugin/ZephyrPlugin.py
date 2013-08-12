@@ -18,7 +18,7 @@ class ZephyrPlugin(Component):
             return
         command = shlex.split(self.config.get('ZephyrPlugin', 'command').encode('utf-8'))
         if not command:
-            command = ['zwrite', '-q', '-l', '-d']
+            command = ['zwrite', '-q', '-l', '-d', '-x', 'UTF-8']
         opcode = self.config.get('ZephyrPlugin', 'opcode')
         if opcode:
             command += ['-O', opcode]
