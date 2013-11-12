@@ -23,6 +23,7 @@ my %commands = (
     "status\\s(deleted|resolved|rejected|open|new|waiting)", "edit ticket/\$t set status=\$1",
     "(d|del|delete)", "edit ticket/\$t set status=deleted",
     "(r|res|resolve)", "edit ticket/\$t set status=resolved",
+    "(rej|reject|rejected)", "edit ticket/\$t set status=rejected",
     "show", "show -l ticket/\$t/history",
     "show (\\d+)", "show -l ticket/\$1/history",
     "list", 'rt list -o +Created "((Status=new or Status=stalled or Status=open) and (Queue=\'$q\'))"',
@@ -134,6 +135,7 @@ Examples:
 	    rt [set|add|del] <args> - runs rt (set|add|del) with relevent args - Dangerous if not careful
 	    rt [d|del|delete] - mark a ticket deleted
 	    rt [r|res|resolve] - mark a ticked resolved
+	    rt [rej|reject|rejected] - mark a ticked rejected
 	    rt status [deleted|resolved|new|open|waiting|rejected] - set status of a ticket
 	    rt show - show detailed history of selected ticket
 	    rt show <ticket> - show history of <ticket>
