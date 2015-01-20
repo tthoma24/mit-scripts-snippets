@@ -1,6 +1,6 @@
 my $class = 'scripts-test';
 my $instance_prefix = 'rt.';
-my @zwrite = ('/usr/athena/bin/zwrite', '-d', '-O', 'auto', '-c', $class);
+my @zwrite = ('/usr/local/bin/zwrite', '-d', '-O', 'auto', '-c', $class);
 
 # RT-to-Zephyr notification scrip
 # http://snippets.scripts.mit.edu/gitweb.cgi/.git/blob/HEAD:/rt/Scrips/zephyr.pl
