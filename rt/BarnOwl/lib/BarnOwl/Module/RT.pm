@@ -48,7 +48,7 @@ if(-r "$file_path") {
     close($fh);
 }
 
-my $file_path = "$cfg/rtcommands";
+$file_path = "$cfg/rtcommands";
 if(-r "$file_path") {
     open(my $fh, "<:encoding(UTF-8)", "$file_path") or die("Unable to read $file_path:$!\n");
     while(defined(my $line = <$fh>)) {
@@ -165,7 +165,7 @@ rtcommands:
 
 	    It is a good place to put custom queries which will be used frequently.
 	  Examples:
-	    "list-owner (\w+)" "rt list -o +Created \"((Status=new or Status=stalled or Status=open) and (Queue='\$q') and 'Owner='\$1')\""
+	    "list-owner (\\w+)" "rt list -o +Created \"((Status=new or Status=stalled or Status=open) and (Queue='\$q') and 'Owner='\$1')\""
 	
 	    \$t is the current ticket
 	    \$q is the current queue
