@@ -12,7 +12,7 @@ Foo
 =cut
 
 package BarnOwl::Module::RT;
-use IPC::Open3;
+use AnyEvent::Util qw(run_cmd);
 use Text::ParseWords;
 
 our $VERSION = '1.0.1';
@@ -105,23 +105,21 @@ sub cmd_rt{
 }
 
 sub run_rt_command{
-    my @args = ("athrun","tooltime","rt");
-    push (@args, @_);
-    local(*IN, *OUT, *ERR);
-    my $pid = open3(*IN, *OUT, *ERR, @args) || die("RT threw $!");
-    close(*IN); 
-    my $out = do { local $/; <OUT> };
-    close(*OUT);
-    $out .= do { local $/; <ERR> };
-    close(*ERR);
-
-    waitpid( $pid, 0 );
-
-    if (($out =~ tr/\n//) eq 1){
-	return $out;
-    }
-    BarnOwl::popless_text($out);
-    return;
+    my $out;
+    run_cmd(
+        ["athrun", "tooltime", "rt", @_],
+        "<", "/dev/null",
+        ">", \$out,
+        "2>", \$out,
+    )->cb(sub {
+        my $ret = shift->recv;
+        $ret == 0 or die("RT returned $ret");
+        if (($out =~ tr/\n//) == 1) {
+            BarnOwl::message($out);
+        } else {
+            BarnOwl::popless_text($out);
+        }
+    });
 }
 
 BarnOwl::new_command("rt",
