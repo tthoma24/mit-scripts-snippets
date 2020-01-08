@@ -64,7 +64,7 @@ fi
 
 # If kcaches and knewcache have been defined for this platform, then
 # setup kdo. Otherwise, add a helpful error.
-if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
+if type kcaches &>/dev/null && type knewcache &>/dev/null; then
     kfindcache () {
         kcaches | fgrep "$1" | cut -d' ' -f2-
     }
@@ -99,7 +99,9 @@ if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
                 COMPREPLY=($(compgen -c -- "${cur}"))
         esac
     }
-    complete -o bashdefault -F _kdo kdo
+    if type complete &>/dev/null; then
+        complete -o bashdefault -F _kdo kdo
+    fi
 
 else
     kdo () {
