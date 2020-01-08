@@ -43,12 +43,12 @@ kdo_args=(-l15m -r60m -F)
 # CC interface for OS X
 if [ "Darwin" = "$(uname)" ]; then
     kcaches () {
-        klist -A | perl -ne '$cache = $1 if /^Kerberos 5 ticket cache: '\''(.*)'\''/; print "$1 $cache\n" if /^Default principal: (.*)$/'
+        klist -A | perl -ne '$cache = $1 if /^(?:Kerberos 5 ticket|Ticket|Credentials) cache: '\''?(.*)'\''?/; print "$1 $cache\n" if /^(?:Default p|P)rincipal: (.*)$/'
     }
 
     knewcache () {
         princ="$1"; shift
-        local oldcache="$(klist | grep 'Kerberos 5 ticket cache' | cut -f 2 -d "'")"
+        local oldcache="$(klist | perl -ne 'print $1 if /^(?:Kerberos 5 ticket|Ticket|Credentials) cache: '\''?(.*)'\''?/')"
         # " # <-- emacs thinks there's an unbalanced " on the previous line.
         kinit "$@" "$princ" || return 1
         cache="$(kfindcache "$princ")"
@@ -76,7 +76,7 @@ if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
         # destroy that cache so we don't try to use it again and clear
         # $cache so that we'll revert to acquiring a new set of
         # tickets
-        if [ -n "$cache" ] && ! klist -s "$cache"; then
+        if [ -n "$cache" ] && ! (KRB5CCNAME="$cache" klist -s); then
             KRB5CCNAME="$cache" kdestroy
             cache=""
         fi
@@ -101,18 +101,17 @@ if hash kcaches &>/dev/null && hash knewcache &>/dev/null; then
     }
     complete -o bashdefault -F _kdo kdo
 
-    krootssh () {
-        kdo ${ATHENA_USER:-$USER}/root@ATHENA.MIT.EDU ssh -o GSSAPIDelegateCredentials=no "$@"
-    }
 else
     kdo () {
         echo "kdo has not been ported to this platform yet." >&2
         return 1
     }
-
-    krootssh () {
-        echo "kdo has not been ported to this plastform yet." >&2
-        return 1
-    }
 fi
 
+krootssh () {
+    kdo ${ATHENA_USER:-$USER}/root@ATHENA.MIT.EDU ssh -o GSSAPIDelegateCredentials=no "$@"
+}
+
+krootscp () {
+    kdo ${ATHENA_USER:-$USER}/root@ATHENA.MIT.EDU scp -o GSSAPIDelegateCredentials=no "$@"
+}
