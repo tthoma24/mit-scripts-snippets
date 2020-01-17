@@ -40,8 +40,8 @@
 # CONFIGURATION
 kdo_args=(-l15m -r60m -F)
 
-# CC interface for OS X
-if [ "Darwin" = "$(uname)" ]; then
+# CC interface for OS X or modern MIT krb5
+if type kswitch &>/dev/null; then
     kcaches () {
         klist -A | perl -ne '$cache = $1 if /^(?:Kerberos 5 ticket|Ticket|Credentials) cache: '\''?(.*)'\''?/; print "$1 $cache\n" if /^(?:Default p|P)rincipal: (.*)$/'
     }
