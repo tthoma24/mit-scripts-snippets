@@ -1,0 +1,4 @@
+NOTE: this repository is automagically cloned via GitHub Actions, and all code resides on the master branch. This branch exists soley for GitHub Actions to do the upstream fetch.
+
+To see code, switch to the master branch, or go to the upstream's (currently very simple) web interface at
+http://snippets.scripts.mit.edu/
